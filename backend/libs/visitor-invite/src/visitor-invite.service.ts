@@ -535,27 +535,40 @@ export class VisitorInviteService  {
            
         }
 
-        const finalSuggestions =[];
+        const finalSuggestions = [];
 
-        //sort descending
+        // if no suggestions, return empty promptly
+        if (suggestions.length === 0) {
+            return finalSuggestions;
+        }
+
+        // sort descending by probability
         suggestions.sort(function(a, b){return b.prob - a.prob});
 
-        //find IQR
-        const q3Index = Math.round(1/4*(suggestions.length+1));
-        let q1Index = Math.round(3/4*(suggestions.length+1));
-        if(q1Index == suggestions.length){
-            q1Index -= 1;
+        // if only one suggestion, return it directly
+        if (suggestions.length === 1) {
+            finalSuggestions.push(suggestions[0]);
+            return finalSuggestions;
         }
+
+        // find IQR with bounds-safe indices (convert to 0-based)
+        let q3Index = Math.round(0.25 * (suggestions.length + 1)) - 1;
+        let q1Index = Math.round(0.75 * (suggestions.length + 1)) - 1;
+
+        if (q3Index < 0) q3Index = 0;
+        if (q3Index >= suggestions.length) q3Index = suggestions.length - 1;
+        if (q1Index < 0) q1Index = 0;
+        if (q1Index >= suggestions.length) q1Index = suggestions.length - 1;
+
         const iqr = suggestions[q3Index].prob - suggestions[q1Index].prob;
+        const threshold = suggestions[suggestions.length - 1].prob + iqr;
 
-        const threshold = suggestions[suggestions.length-1].prob + iqr;
-
-        //filter
-        for(let i=0;i<suggestions.length;i++){
-            if(suggestions[i].prob<=threshold ) {
+        // filter by threshold
+        for (let i = 0; i < suggestions.length; i++) {
+            if (suggestions[i].prob <= threshold) {
                 continue;
             } else {
-                finalSuggestions.push(suggestions[i])
+                finalSuggestions.push(suggestions[i]);
             }
         }
         

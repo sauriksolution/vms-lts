@@ -168,7 +168,7 @@ const AdminDashboard = () => {
 
     const numVisitorSpotsAvailableQuery = useQuery(gql`
         query {
-            getTotalAvailableVisitor
+            getTotalAvailableParking
         }
     `);
 
@@ -191,9 +191,8 @@ const AdminDashboard = () => {
 
     const numVisitorInDateRangeQuery = useQuery(gql`
         query {
-            getUsedVisitorsInRange(startDate: "${visitorStartDate}", endDate: "${visitorEndDate}") {
+            getUsedParkingsInRange(startDate: "${visitorStartDate}", endDate: "${visitorEndDate}") {
                 reservationDate
-                visitor,
             }
         }
     `);
@@ -366,7 +365,7 @@ const AdminDashboard = () => {
             !numVisitorInDateRangeQuery.error
         ) {
             const visitorNumbers =
-                numVisitorInDateRangeQuery.data.getUsedVisitorsInRange;
+                numVisitorInDateRangeQuery.data.getUsedParkingsInRange;
 
             visitorNumbers.forEach((visitor) => {
                 if (!isNaN(visitorDateMap.get(visitor.reservationDate))) {
@@ -395,7 +394,7 @@ const AdminDashboard = () => {
             !numVisitorSpotsAvailableQuery.error
         ) {
             const numVisitorspots =
-                numVisitorSpotsAvailableQuery.data.getTotalAvailableVisitor;
+                numVisitorSpotsAvailableQuery.data.getTotalAvailableParking;
             setNumVisitorSpotsAvailable(numVisitorspots);
             setInitialNumVisitorSpots(numVisitorspots);
             setNumVisitorSpotsAvailableToday(

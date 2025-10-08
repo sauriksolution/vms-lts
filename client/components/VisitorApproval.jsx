@@ -9,8 +9,7 @@ const GET_PENDING_VISITORS = gql`
       email
       name
       idNumber
-      idDocType
-      dateJoined
+      signUpDate
     }
   }
 `;
@@ -113,8 +112,7 @@ const VisitorApproval = () => {
                   <div className="mt-2 space-y-1 text-sm text-gray-600">
                     <p><span className="font-medium">Email:</span> {visitor.email}</p>
                     <p><span className="font-medium">ID Number:</span> {visitor.idNumber}</p>
-                    <p><span className="font-medium">ID Type:</span> {visitor.idDocType}</p>
-                    <p><span className="font-medium">Registration Date:</span> {visitor.dateJoined}</p>
+                    <p><span className="font-medium">Registration Date:</span> {visitor.signUpDate}</p>
                   </div>
                 </div>
                 
