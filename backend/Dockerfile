@@ -1,18 +1,18 @@
 # Build project
-FROM node:18-alpine3.14 As development
+FROM node:16-alpine As development
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install --only=development
+RUN npm ci --only=development
 
 COPY . .
 
-RUN yarn run build
+RUN npm run build
 
 # Run and build project, but used cached build layer from above
-FROM node:18-alpine3.14 as production
+FROM node:16-alpine as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -21,7 +21,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install --only=production
+RUN npm ci --only=production
 
 COPY . .
 

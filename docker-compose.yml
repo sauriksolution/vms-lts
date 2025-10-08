@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: vms-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: vms
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: vms-backend
+    depends_on:
+      - mongodb
+      - data-prep
+      - face-rec
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGO_DB_CONNECTION_STRING: mongodb://mongodb:27017/vms
+      JWT_SECRET: super-secret-jwt-key
+      DATA_PREP_URL: http://data-prep:3002
+      FACE_REC_URL: http://face-rec:3003
+    ports:
+      - "3001:3001"
+
+  client:
+    build:
+      context: ./client
+    container_name: vms-client
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: production
+      BACKEND_URL: http://backend:3001
+      BACKEND_GRAPHQL_URL: http://backend:3001/graphql
+      DATA_PREP_URL: http://data-prep:3002
+      FACE_REC_URL: http://face-rec:3003
+    ports:
+      - "3000:3000"
+
+  data-prep:
+    build:
+      context: ./data-prep
+    container_name: vms-data-prep
+    depends_on:
+      - mongodb
+    environment:
+      PORT: 3002
+      MONGO_DB_CONNECTION_STRING: mongodb://mongodb:27017/vms
+    ports:
+      - "3002:3002"
+
+  face-rec:
+    build:
+      context: ./face-rec
+    container_name: vms-face-rec
+    depends_on:
+      - mongodb
+    environment:
+      PORT: 3003
+      MONGO_DB_CONNECTION_STRING: mongodb://mongodb:27017/vms
+    ports:
+      - "3003:3003"
+
+volumes:
+  mongo_data:
+    driver: local

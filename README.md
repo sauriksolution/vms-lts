@@ -603,24 +603,41 @@ MODEL_RETRAIN_INTERVAL=24  # hours
 
 ### Docker Deployment
 
-#### Backend
-```dockerfile
-# Dockerfile already provided in backend/
-docker build -t vms-backend .
-docker run -p 3001:3001 vms-backend
+#### Compose (Backend, Frontend, AI services, MongoDB)
+
+The repository includes a `docker-compose.yml` that spins up the full stack:
+
+Services:
+- `mongodb`: MongoDB database
+- `backend`: NestJS GraphQL API on `http://localhost:3001`
+- `client`: Next.js frontend on `http://localhost:3000`
+- `data-prep`: Flask AI service on `http://localhost:3002`
+- `face-rec`: Flask Face Recognition service on `http://localhost:3003`
+
+Steps:
+```bash
+# 1) Ensure Docker and Docker Compose are installed
+# 2) (Optional) Review .env.docker and adjust secrets
+# 3) Build and start all services
+docker compose up -d --build
+
+# 4) Check container logs
+docker compose logs -f backend
+docker compose logs -f client
+
+# 5) Seed demo users (run once)
+docker compose exec backend node seed-users.js
+
+# 6) Verify
+# Frontend: http://localhost:3000
+# GraphQL:  http://localhost:3001/graphql
 ```
 
-#### AI Services
-```dockerfile
-# Data Preparation Service
-cd data-prep
-docker build -t vms-data-prep .
-docker run -p 3002:3002 vms-data-prep
-
-# Face Recognition Service
-cd face-rec
-docker build -t vms-face-rec .
-docker run -p 3003:3003 vms-face-rec
+Shutdown:
+```bash
+docker compose down
+# Remove volumes as well (MongoDB data)
+docker compose down -v
 ```
 
 ### Cloud Deployment
