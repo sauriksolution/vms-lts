@@ -1,54 +1,11 @@
 # Intelligent Visitor Management System (VMS)
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VMS</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #1e3c72, #2a5298);
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .vms-container {
-      text-align: center;
-      padding: 40px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-    }
-
-    .vms-title {
-      font-size: 3rem;
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-
-    .vms-subtitle {
-      font-size: 1.2rem;
-      font-weight: 300;
-      color: #e0e0e0;
-    }
-  </style>
-</head>
 <body>
   <div class="vms-container">
     <div class="vms-title">VMS</div>
     <div class="vms-subtitle">Virtual Management System</div>
   </div>
 </body>
-</html>
 
 ## 📐 About The Project
 
