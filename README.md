@@ -864,3 +864,5 @@ We welcome contributions! Please read our [Contributing Guidelines](./CONTRIBUTI
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details."# vms-lts" 
 "# vms-lts"  
+"# VMS - Visitor Management System" 
+"# VMS - Visitor Management System"  
