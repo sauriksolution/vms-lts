@@ -1,8 +1,54 @@
 # Intelligent Visitor Management System (VMS)
 
-<div align="center">
-    <img width="55%" src="https://user-images.githubusercontent.com/29174023/166639981-b303a2c9-4e56-4623-a42f-f4cb0d3067cf.png" />
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VMS</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .vms-container {
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .vms-title {
+      font-size: 3rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .vms-subtitle {
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="vms-container">
+    <div class="vms-title">VMS</div>
+    <div class="vms-subtitle">Virtual Management System</div>
+  </div>
+</body>
+</html>
 
 ## 📐 About The Project
 
@@ -794,11 +840,6 @@ NODE_ENV=development npm run dev
 - [MongoDB Documentation](https://docs.mongodb.com/)
 - [TailwindCSS Documentation](https://tailwindcss.com/docs)
 
-### Community
-- [GitHub Issues](https://github.com/COS301-SE-2022/Intelligent-VMS-Visitor-Management-System-/issues)
-- [Discussions](https://github.com/COS301-SE-2022/Intelligent-VMS-Visitor-Management-System-/discussions)
-- [Wiki](https://github.com/COS301-SE-2022/Intelligent-VMS-Visitor-Management-System-/wiki)
-
 ## 🤝 Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](./CONTRIBUTING.md) for details on:
@@ -820,16 +861,3 @@ We welcome contributions! Please read our [Contributing Guidelines](./CONTRIBUTI
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **University of Pretoria**: COS301 Software Engineering course
-- **Development Team**: Dedicated student developers
-- **Open Source Community**: Libraries and frameworks used
-- **Testing Community**: Beta testers and feedback providers
-
----
-
-**Built with ❤️ by the COS301 Software Engineering Team**
-
-*This project represents the culmination of modern web development practices, AI integration, and user-centered design principles.*
