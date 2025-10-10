@@ -39,7 +39,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      MONGO_DB_CONNECTION_STRING: mongodb://mongodb:27017/vms
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
       JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
       DATA_PREP_URL: http://data-prep:3002
       FACE_REC_URL: http://face-rec:3003
@@ -82,7 +82,7 @@ services:
         condition: service_healthy
     environment:
       PORT: 3002
-      MONGO_DB_CONNECTION_STRING: mongodb://mongodb:27017/vms
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
     ports:
       - "3002:3002"
     networks:
@@ -101,7 +101,7 @@ services:
         condition: service_healthy
     environment:
       PORT: 3003
-      MONGO_DB_CONNECTION_STRING: mongodb://mongodb:27017/vms
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
     ports:
       - "3003:3003"
     networks:

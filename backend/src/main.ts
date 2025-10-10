@@ -1,3 +1,13 @@
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load environment variables from the root directory
+config({ path: resolve(__dirname, '../../.env') });
+
+// Debug: Log JWT_SECRET to verify it's loaded
+console.log('JWT_SECRET loaded:', process.env.JWT_SECRET ? 'YES' : 'NO');
+console.log('JWT_SECRET value:', process.env.JWT_SECRET);
+
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { urlencoded, json } from 'express';

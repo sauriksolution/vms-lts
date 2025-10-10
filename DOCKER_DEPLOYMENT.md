@@ -76,8 +76,8 @@ JWT_SECRET=your-super-secure-jwt-secret-key
 MONGO_INITDB_ROOT_USERNAME=your-mongo-username
 MONGO_INITDB_ROOT_PASSWORD=your-secure-mongo-password
 
-# Database
-MONGO_DB_CONNECTION_STRING=mongodb://mongodb:27017/vms
+# Database - MongoDB Atlas
+MONGO_DB_CONNECTION_STRING=mongodb+srv://vmssauriksolution:9CatOVvR1Hptz5KB@vms.hstsv6w.mongodb.net/vms?retryWrites=true&w=majority&appName=vms
 
 # Service URLs (Internal)
 DATA_PREP_URL=http://data-prep:3002
