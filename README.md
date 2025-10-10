@@ -1,11 +1,55 @@
 # Intelligent Visitor Management System (VMS)
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VMS</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .vms-container {
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .vms-title {
+      font-size: 3rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .vms-subtitle {
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: #e0e0e0;
+    }
+  </style>
+</head>
 <body>
   <div class="vms-container">
     <div class="vms-title">VMS</div>
     <div class="vms-subtitle">Virtual Management System</div>
   </div>
 </body>
+</html>
+
 
 ## 📐 About The Project
 
@@ -282,7 +326,7 @@ cp .env.example .env
 
 # Configure environment variables
 # Edit .env file with your settings:
-# MONGO_DB_CONNECTION_STRING=mongodb://localhost:27017/vms
+# MONGO_DB_CONNECTION_STRING=mongodb+srv://username:password@cluster.mongodb.net/vms?retryWrites=true&w=majority&appName=vms
 # JWT_SECRET=your-super-secret-jwt-key
 # MAIL_HOST=smtp.gmail.com
 # MAIL_USER=your-email@gmail.com
@@ -536,8 +580,8 @@ GET  /api/face/status      # Service health check
 
 #### Backend (.env)
 ```env
-# Database
-MONGO_DB_CONNECTION_STRING=mongodb://localhost:27017/vms
+# Database - MongoDB Atlas
+MONGO_DB_CONNECTION_STRING=mongodb+srv://username:password@cluster.mongodb.net/vms?retryWrites=true&w=majority&appName=vms
 
 # Authentication
 JWT_SECRET=your-super-secret-jwt-key-here
@@ -584,8 +628,8 @@ NEXT_PUBLIC_GA_ID=your-google-analytics-id
 
 #### AI Services (.env)
 ```env
-# Database
-MONGO_DB_CONNECTION_STRING=mongodb://localhost:27017/vms
+# Database - MongoDB Atlas
+MONGO_DB_CONNECTION_STRING=mongodb+srv://username:password@cluster.mongodb.net/vms?retryWrites=true&w=majority&appName=vms
 
 # Service Configuration
 PORT=3002  # or 3003 for face-rec
@@ -797,6 +841,7 @@ NODE_ENV=development npm run dev
 - [MongoDB Documentation](https://docs.mongodb.com/)
 - [TailwindCSS Documentation](https://tailwindcss.com/docs)
 
+
 ## 🤝 Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](./CONTRIBUTING.md) for details on:
@@ -817,4 +862,5 @@ We welcome contributions! Please read our [Contributing Guidelines](./CONTRIBUTI
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details."# vms-lts" 
+"# vms-lts"  
