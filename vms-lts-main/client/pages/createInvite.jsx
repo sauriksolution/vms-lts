@@ -1,0 +1,431 @@
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import { Formik, Field } from "formik";
+import { gql, useQuery, useApolloClient } from "@apollo/client";
+import { motion } from "framer-motion";
+
+import useAuth from "../store/authStore.js";
+
+import Layout from "../components/Layout";
+import VisitorSuggestions from "../components/VisitorSuggestions.jsx";
+
+const getFormattedDateString = (date) => {
+    if (date instanceof Date) {
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return [
+            date.getFullYear(),
+            (month > 9 ? "" : "0") + month,
+            (day > 9 ? "" : "0") + day,
+        ].join("-");
+    }
+};
+
+const CreateInvite = ({ name, email, idNumber, idDocType }) => {
+
+    // Get Instance of NextJS router to redirect to different pages
+    const router = useRouter();
+    //let { name, email, idNumber, idDocType } = router.query;
+
+    // Get Apollo client from provider
+    const client = useApolloClient();
+
+    // Manipulate state for showing error alert
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+
+    // Number of invites allowed to be sent/open of resident
+    const [numInvitesAllowed, setNumInvitesAllowed] = useState(0);
+
+    // Invite limit reached state
+    const [limitReached, setLimitReached] = useState(false);
+
+    // Manipulate state for showing error alert
+    const [errorMessage, setErrorMessage] = useState("");
+
+    // Whether or not seat is available
+    const [isVisitorAvailable, setIsVisitorAvailable] = useState(true);
+
+    // Whether or not the suggestion used to generate invite data
+    const [suggestion, setSuggestion] = useState(false);
+
+    const [now, setNow] = useState(getFormattedDateString(new Date()));
+
+    // Get Data From JWT Token
+    const jwtTokenData = useAuth((state) => {
+        return state.decodedToken;
+    })();
+
+    // Car Animation Framer Motion Variant
+    const driveAway = {
+        initial: {
+            scale: 1.2,
+            x: 0,
+        },
+        animate: {
+            x: 900,
+        },
+    };
+
+    const isVisitorAvailableQuery = useQuery(gql`
+        query {
+            isVisitorAvailable(startDate: "${now}")
+        }
+    `);
+
+    const numInvitesQuery = useQuery(gql`
+        query {
+            getMaxInvitesPerResident
+        }
+    `);
+
+    const numInvitesOfResidentQuery = useQuery(gql`
+        query {
+             getNumberOfOpenInvites(email: "${jwtTokenData.email}") 
+        }
+    `);
+
+    useEffect(() => {
+        if (!numInvitesQuery.loading && !numInvitesQuery.error) {
+            setNumInvitesAllowed(
+                numInvitesQuery.data.getMaxInvitesPerResident
+            );
+        } else if (numInvitesQuery.error) {
+            if (numInvitesQuery.error.message === "Unauthorized") {
+                router.push("/expire");
+            }
+            setErrorMessage(numInvitesQuery.error.message);
+            setShowErrorAlert(true);
+        }
+
+        if (
+            !isVisitorAvailableQuery.loading &&
+            !isVisitorAvailableQuery.error
+        ) {
+            setIsVisitorAvailable(
+                isVisitorAvailableQuery.data.isVisitorAvailable
+            );
+        } else if (
+            !isVisitorAvailableQuery.loading &&
+            isVisitorAvailableQuery.error
+        ) {
+            if (isVisitorAvailableQuery.error.message === "Unauthorized") {
+                router.push("/");
+            }
+            setErrorMessage(isVisitorAvailableQuery.error.message);
+            setShowErrorAlert(true);
+        }
+    }, [
+        numInvitesQuery,
+        numInvitesAllowed,
+        limitReached,
+        isVisitorAvailableQuery,
+        setNow,
+    ]);
+
+    useEffect(() => {
+        if (
+            !numInvitesOfResidentQuery.loading &&
+            !numInvitesOfResidentQuery.error &&
+            numInvitesAllowed !== 0
+        ) {
+            const numSent =
+                numInvitesOfResidentQuery.data
+                    .getNumberOfOpenInvites;
+            if (numSent >= numInvitesAllowed && jwtTokenData.permission === 2) {
+                setErrorMessage("Invite Limit Reached");
+                setLimitReached(true);
+                setShowErrorAlert(true);
+            } else {
+                setLimitReached(false);
+                setShowErrorAlert(false);
+            }
+        } else if (
+            !numInvitesOfResidentQuery.loading &&
+            numInvitesOfResidentQuery.error
+        ) {
+            if (numInvitesOfResidentQuery.error.message === "Unauthorized") {
+                router.push("/expire");
+            }
+            setErrorMessage(numInvitesOfResidentQuery.error.message);
+            setShowErrorAlert(true);
+        }
+    }, [numInvitesOfResidentQuery, numInvitesAllowed, jwtTokenData.permission, router])
+
+    return (
+        <Layout>
+            <div className="relative flex h-full min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden pb-3">
+                <Formik
+                    initialValues={{
+                        email: !email ? "" : email,
+                        idDoc: !idDocType ? "Citizenship-ID" : idDocType,
+                        name: !name ? "" : name,
+                        idValue: !idNumber ? "" : idNumber,
+                        visitDate: now,
+                        reserveVisitor: false,
+                    }}
+                    validate={(values) => {
+                        const errors = {};
+                        if (!values.email) {
+                            errors.email = "Required";
+                        } else if (
+                            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
+                                values.email
+                            )
+                        ) {
+                            errors.email = "Invalid email address";
+                        }  else if (!values.idValue) {
+                            errors.idValue = "Required";
+                        } else if (
+                            (values.idDoc === "Citizenship-ID" ||
+                                values.idDoc === "Drivers-License") &&
+                            !/^[A-Za-z0-9\/-]{6,15}$/i.test(
+                                values.idValue
+                            )
+                        ) {
+                            errors.idValue = "Invalid Citizenship ID Number. Must be 6-15 characters and can contain letters, numbers, / and -";
+                        } else if (!values.name) {
+                            errors.name = "Required";
+                        } else if (!/[A-Za-z]+/i.test(values.name)) {
+                            errors.name =
+                                "Name contains non alphabetic characters";
+                        } else if (
+                            values.idDoc === "UP-Student-ID" &&
+                            !/^\d{8}$/i.test(values.idValue)
+                        ) {
+                            errors.idValue = "Invalid UP student number";
+                        } else if (!values.visitDate) {
+                            errors.visitDate = "Please add a date";
+                        }
+
+                        return errors;
+                    }}
+                    onSubmit={(values, { setSubmitting }) => {
+
+                        const CREATE_INVITE = gql`
+                            mutation {
+                                createInvite(
+                                    userEmail: "${jwtTokenData.email}"
+                                    visitorEmail: "${values.email}"
+                                    visitorName: "${values.name.toLowerCase()}"
+                                    IDDocType: "${values.idDoc}"
+                                    IDNumber: "${values.idValue}"
+                                    inviteDate: "${values.visitDate}"
+                                    requiresVisitor: ${values.reserveVisitor}
+                                    suggestion: ${suggestion}
+                            )
+                        }
+                        `;
+
+                        client
+                            .mutate({
+                                mutation: CREATE_INVITE,
+                            })
+                            .then((res) => {
+                                if (res.data.createInvite) {
+                                    router.push("/visitorDashboard");
+                                    setShowErrorAlert(false);
+                                    setSubmitting(false);
+                                }
+                            })
+                            .catch((err) => {
+                                setSubmitting(false);
+                                if (err.message === "Unauthorized") {
+                                    router.push("/expire");
+                                    return;
+                                } else {
+                                    setErrorMessage(err.message);
+                                    setShowErrorAlert(true);
+                                }
+                            });
+                    }}
+                >
+                    {({
+                        values,
+                        errors,
+                        touched,
+                        handleChange,
+                        handleBlur,
+                        handleSubmit,
+                        isSubmitting,
+                    }) => {
+                        return (
+                            <form
+                                onSubmit={handleSubmit}
+                                className="md:p-26 prose form-control mt-3 space-y-3 rounded-none bg-base-300 p-14 md:rounded-xl"
+                            >
+                                <h1>
+                                    Let&apos;s{" "}
+                                    <span className="text-secondary">
+                                        Invite
+                                    </span>{" "}
+                                    Someone🔥
+                                </h1>
+
+                                <span className="text-md mb-1 font-bold">
+                                    Invite Date:
+                                </span>
+
+                                <input
+                                    type="date"
+                                    name="visitDate"
+                                    placeholder="Visit Date"
+                                    className="input input-bordered w-full"
+                                    min={getFormattedDateString(new Date())}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setNow(e.currentTarget.value);
+                                    }}
+                                    onBlur={handleBlur}
+                                    value={values.visitDate}
+                                />
+
+                                {!values.name.length > 0 && !email && !idNumber && !idDocType ? (
+                                    <VisitorSuggestions date={now} setSuggestion={setSuggestion} />
+                                ):(
+                                    <div></div>
+                                )}
+                                
+
+                                <br/>
+
+                                <span className="text-md mb-1 font-bold">
+                                        Visitor Details:
+                                </span>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Visitor Email"
+                                    autoComplete="username"
+                                    className="input input-bordered w-full"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    value={values.email}
+                                />
+
+                                <span className="text-error">
+                                    {errors.email &&
+                                        touched.email &&
+                                        errors.email}
+                                </span>
+
+                                <Field
+                                    as="select"
+                                    className="select select-primary w-full"
+                                    name="idDoc"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                >
+                                    <option value="Citizenship-ID">Citizenship ID</option>
+                                    <option value="Drivers-License">
+                                        Driver&apos;s License
+                                    </option>
+                                    <option value="UP-Student-ID">
+                                        Student Number
+                                    </option>
+                                </Field>
+
+                                <input
+                                    type="text"
+                                    name="idValue"
+                                    placeholder="Enter Citizenship ID number"
+                                    className="input input-bordered w-full"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    value={values.idValue}
+                                />
+                                <span className="text-error">
+                                    {errors.idValue &&
+                                        touched.idValue &&
+                                        errors.idValue}
+                                </span>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Enter Visitor Name"
+                                    className="input input-bordered w-full"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    value={values.name}
+                                />
+                                <span className="text-error">
+                                    {errors.name && touched.name && errors.name}
+                                </span>
+
+                                <br/>
+
+                                <motion.label className="label cursor-pointer">
+                                    <motion.span
+                                        initial="initial"
+                                        whileHover="animate"
+                                        className="label-text overflow-x-hidden pr-3"
+                                    >
+                                        {values.reserveVisitor?  <span className='mr-3 font-bold text-base text-secondary'>Seat Reserved</span>:<span className='font-bold text-base mr-3'>Reserve Seat </span> }
+                                        <motion.span
+                                            initial={false}
+                                            className="inline-block"
+                                            animate={{
+                                                x: values.reserveVisitor
+                                                    ? 0
+                                                    : -500,
+                                                transition: {
+                                                    duration: 0.8,
+                                                    ease: "easeInOut",
+                                                },
+                                            }}
+                                            variants={driveAway}
+                                        >
+                                            {" "}
+                                            🚗
+                                        </motion.span>
+                                    </motion.span>
+
+                                    <motion.input
+                                        className="disabled toggle"
+                                        disabled={
+                                        isVisitorAvailable ? false : true
+                                    }
+                                    name="reserveVisitor"
+                                        type="checkbox"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.reserveVisitor}
+                                />
+                                {!isVisitorAvailable && (
+                                        <span className="text-error">
+                                            Seat Full
+                                        </span>
+                                    )}
+                                </motion.label>
+
+                                <button
+                                    data-testid="invite-submit"
+                                    className="btn btn-primary"
+                                    type="submit"
+                                    disabled={isSubmitting || limitReached}
+                                >
+                                    Invite
+                                </button>
+                            </form>
+                        );
+                    }}
+                </Formik>
+            </div>
+        </Layout>
+    );
+};
+
+CreateInvite.getInitialProps = async ({ query }) => {
+    const { name, email, idNumber, idDocType } = query;
+    
+    return {
+        name: name ? name : "",
+        email: email ? email : "",
+        idNumber: idNumber ? idNumber : "",
+        idDocType:  idDocType ? idDocType : "",
+        protected: true
+    }
+};
+
+export default CreateInvite;

@@ -1,0 +1,120 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: vms-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: vms
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-secure-password}
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    ports:
+      - "27017:27017"
+    networks:
+      - vms-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vms-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      data-prep:
+        condition: service_healthy
+      face-rec:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      DATA_PREP_URL: http://data-prep:3002
+      FACE_REC_URL: http://face-rec:3003
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "3001:3001"
+    networks:
+      - vms-network
+    volumes:
+      - ./backend/uploads:/usr/src/app/uploads
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: vms-client
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:3001
+      NEXT_PUBLIC_BACKEND_GRAPHQL_URL: http://localhost:3001/graphql
+      NEXT_PUBLIC_DATA_PREP_URL: http://localhost:3002
+      NEXT_PUBLIC_FACE_REC_URL: http://localhost:3003
+    ports:
+      - "3000:3000"
+    networks:
+      - vms-network
+
+  data-prep:
+    build:
+      context: ./data-prep
+      dockerfile: Dockerfile
+    container_name: vms-data-prep
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      PORT: 3002
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
+    ports:
+      - "3002:3002"
+    networks:
+      - vms-network
+    volumes:
+      - ./data-prep/models:/app/models
+
+  face-rec:
+    build:
+      context: ./face-rec
+      dockerfile: Dockerfile
+    container_name: vms-face-rec
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      PORT: 3003
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
+    ports:
+      - "3003:3003"
+    networks:
+      - vms-network
+    volumes:
+      - ./face-rec/models:/app/models
+
+networks:
+  vms-network:
+    driver: bridge
+    name: vms-network
+
+volumes:
+  mongo_data:
+    driver: local
+    name: vms-mongo-data
