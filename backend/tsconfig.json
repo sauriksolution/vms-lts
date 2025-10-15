@@ -1,0 +1,104 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowJs": true,
+    "maxNodeModuleJsDepth": 10,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "types": ["node", "multer"],
+    "paths": {
+      "@vms/my-library": [
+        "libs/my-library/src"
+      ],
+      "@vms/my-library/*": [
+        "libs/my-library/src/*"
+      ],
+      "@vms/database": [
+        "libs/database/src"
+      ],
+      "@vms/database/*": [
+        "libs/database/src/*"
+      ],
+      "@vms/visitor": [
+        "libs/visitor/src"
+      ],
+      "@vms/visitor/*": [
+        "libs/visitor/src/*"
+      ],
+      "@vms/user": [
+        "libs/user/src"
+      ],
+      "@vms/user/*": [
+        "libs/user/src/*"
+      ],
+      "@vms/auth": [
+        "libs/auth/src"
+      ],
+      "@vms/auth/*": [
+        "libs/auth/src/*"
+      ],
+      "@vms/visitor-invite": [
+        "libs/visitor-invite/src"
+      ],
+      "@vms/visitor-invite/*": [
+        "libs/visitor-invite/src/*"
+      ],
+      "@vms/resident": [
+        "libs/resident/src"
+      ],
+      "@vms/resident/*": [
+        "libs/resident/src/*"
+      ],
+      "@vms/parking": [
+        "libs/parking/src"
+      ],
+      "@vms/parking/*": [
+        "libs/parking/src/*"
+      ],
+      "@vms/mail": [
+        "libs/mail/src"
+      ],
+      "@vms/mail/*": [
+        "libs/mail/src/*"
+      ],
+      "@vms/receptionist": [
+        "libs/receptionist/src"
+      ],
+      "@vms/receptionist/*": [
+        "libs/receptionist/src/*"
+      ],
+      "@vms/restrictions": [
+        "libs/restrictions/src"
+      ],
+      "@vms/restrictions/*": [
+        "libs/restrictions/src/*"
+      ],
+      "@vms/throttler": [
+        "libs/throttler/src"
+      ],
+      "@vms/throttler/*": [
+        "libs/throttler/src/*"
+      ],
+      "@vms/rewards": [
+        "libs/rewards/src"
+      ],
+      "@vms/rewards/*": [
+        "libs/rewards/src/*"
+      ]
+    }
+  }
+}
